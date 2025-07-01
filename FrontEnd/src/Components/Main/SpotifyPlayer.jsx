@@ -8,14 +8,12 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 
-
 function SpotifyPlayer() {
   const [profile, setProfile] = useState(null);
   const [playlists, setPlaylists] = useState([]);
   const [tracks, setTracks] = useState([]);
   const [selectedPlaylist, setSelectedPlaylist] = useState('');
   const spotifyToken = localStorage.getItem('spotifyToken');
-
 
   // Fetch user profile
   useEffect(() => {
@@ -57,70 +55,103 @@ function SpotifyPlayer() {
   }, [spotifyToken, selectedPlaylist]);
 
   return (
-    <div>
-      <h3>Your profile</h3>
-      {profile && profile.display_name && profile.email ? (
-  <Card sx={{ maxWidth: 345, mb: 2 }}>
-    <CardContent>
-      <Typography gutterBottom variant="h5" component="div">
-        {profile.display_name}
-      </Typography>
-      <Typography variant="body2" color="text.secondary">
-        Email: {profile.email}
-      </Typography>
-    </CardContent>
-  </Card>
-) : (
-  <Card sx={{ maxWidth: 345, mb: 2 }}>
-    <CardContent>
-      <Typography variant="body2" color="text.secondary">
-        Loading profile...
-      </Typography>
-    </CardContent>
-  </Card>
-)}
+    <Box
+      sx={{
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #43cea2 0%, #185a9d 100%)',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        py: 6,
+      }}
+    >
+      <Card sx={{ maxWidth: 400, width: '100%', mb: 4, boxShadow: 6, bgcolor: 'rgba(255,255,255,0.95)' }}>
+        <CardContent>
+          <Typography variant="h3" align="center" sx={{ fontWeight: 700, color: '#185a9d', mb: 2 }}>
+            🎵 My Spotify
+          </Typography>
+          {profile && profile.display_name && profile.email ? (
+            <>
+              <Typography variant="h5" align="center" sx={{ color: '#43cea2', fontWeight: 600 }}>
+                {profile.display_name}
+              </Typography>
+              <Typography variant="body1" align="center" sx={{ mb: 2 }}>
+                Email: {profile.email}
+              </Typography>
+            </>
+          ) : (
+            <Typography align="center" color="text.secondary">
+              Loading profile...
+            </Typography>
+          )}
+        </CardContent>
+      </Card>
 
-      <h3>Your Playlists</h3>
+      <Card sx={{ maxWidth: 400, width: '100%', mb: 4, boxShadow: 4, bgcolor: 'rgba(255,255,255,0.9)' }}>
+        <CardContent>
+          <Typography variant="h6" sx={{ mb: 2, color: '#185a9d', fontWeight: 600 }}>
+            Your Playlists
+          </Typography>
+          <Box sx={{ minWidth: 240 }}>
+            <FormControl fullWidth>
+              <InputLabel id="playlist-select-label">Select a playlist</InputLabel>
+              <Select
+                labelId="playlist-select-label"
+                id="playlist-select"
+                value={selectedPlaylist}
+                label="Select a playlist"
+                onChange={e => setSelectedPlaylist(e.target.value)}
+              >
+                <MenuItem value="">
+                  <em>None</em>
+                </MenuItem>
+                {playlists.map(playlist => (
+                  <MenuItem key={playlist.id} value={playlist.id}>
+                    {playlist.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
+        </CardContent>
+      </Card>
 
-      <Box sx={{ minWidth: 240 }}>
-        <FormControl fullWidth>
-          <InputLabel id="playlist-select-label">Select a playlist</InputLabel>
-          <Select
-            labelId="playlist-select-label"
-            id="playlist-select"
-            value={selectedPlaylist}
-            label="Select a playlist"
-            onChange={e => setSelectedPlaylist(e.target.value)}
-          >
-            <MenuItem value="">
-              <em>None</em>
-            </MenuItem>
-            {playlists.map(playlist => (
-              <MenuItem key={playlist.id} value={playlist.id}>
-                {playlist.name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </Box>
-
-      <h3>Tracks</h3>
-      <ul>
-        {tracks.map(item => (
-          <li key={item.track.id}>
-            {item.track.name} - {item.track.artists.map(a => a.name).join(', ')}
-            {' '}
-            <a
-              href={item.track.external_urls.spotify}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              ▶️ Play on Spotify
-            </a>
-          </li>
-        ))}
-      </ul>
-    </div>
+      {selectedPlaylist && (
+        <Card sx={{ maxWidth: 600, width: '100%', boxShadow: 3, bgcolor: 'rgba(255,255,255,0.95)' }}>
+          <CardContent>
+            <Typography variant="h6" sx={{ mb: 2, color: '#43cea2', fontWeight: 600 }}>
+              Tracks
+            </Typography>
+            <Box component="ul" sx={{ pl: 2 }}>
+              {tracks.length === 0 && (
+                <Typography color="text.secondary">No tracks found.</Typography>
+              )}
+              {tracks.map(item => (
+                <li key={item.track.id} style={{ marginBottom: 8 }}>
+                  <Typography component="span" sx={{ fontWeight: 500 }}>
+                    {item.track.name}
+                  </Typography>
+                  {' – '}
+                  <Typography component="span" sx={{ color: '#185a9d' }}>
+                    {item.track.artists.map(a => a.name).join(', ')}
+                  </Typography>
+                  {' '}
+                  <a
+                    href={item.track.external_urls.spotify}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ textDecoration: 'none', marginLeft: 8 }}
+                  >
+                    <span role="img" aria-label="play">▶️</span> Play
+                  </a>
+                </li>
+              ))}
+            </Box>
+          </CardContent>
+        </Card>
+      )}
+    </Box>
   );
 }
 
