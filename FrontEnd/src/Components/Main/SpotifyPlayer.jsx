@@ -1,4 +1,13 @@
 import React, { useEffect, useState } from 'react';
+import Box from '@mui/material/Box';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Typography from '@mui/material/Typography';
+
 
 function SpotifyPlayer() {
   const [profile, setProfile] = useState(null);
@@ -6,6 +15,7 @@ function SpotifyPlayer() {
   const [tracks, setTracks] = useState([]);
   const [selectedPlaylist, setSelectedPlaylist] = useState('');
   const spotifyToken = localStorage.getItem('spotifyToken');
+
 
   // Fetch user profile
   useEffect(() => {
@@ -48,28 +58,51 @@ function SpotifyPlayer() {
 
   return (
     <div>
-      <h2>Spotify Profile</h2>
-      {profile ? (
-        <div>
-          <p>Name: {profile.display_name}</p>
-          <p>Email: {profile.email}</p>
-        </div>
-      ) : (
-        <div>Loading profile...</div>
-      )}
+      <h3>Your profile</h3>
+      {profile && profile.display_name && profile.email ? (
+  <Card sx={{ maxWidth: 345, mb: 2 }}>
+    <CardContent>
+      <Typography gutterBottom variant="h5" component="div">
+        {profile.display_name}
+      </Typography>
+      <Typography variant="body2" color="text.secondary">
+        Email: {profile.email}
+      </Typography>
+    </CardContent>
+  </Card>
+) : (
+  <Card sx={{ maxWidth: 345, mb: 2 }}>
+    <CardContent>
+      <Typography variant="body2" color="text.secondary">
+        Loading profile...
+      </Typography>
+    </CardContent>
+  </Card>
+)}
 
       <h3>Your Playlists</h3>
-      <select
-        onChange={e => setSelectedPlaylist(e.target.value)}
-        value={selectedPlaylist}
-      >
-        <option value="">Select a playlist</option>
-        {playlists.map(playlist => (
-          <option key={playlist.id} value={playlist.id}>
-            {playlist.name}
-          </option>
-        ))}
-      </select>
+
+      <Box sx={{ minWidth: 240 }}>
+        <FormControl fullWidth>
+          <InputLabel id="playlist-select-label">Select a playlist</InputLabel>
+          <Select
+            labelId="playlist-select-label"
+            id="playlist-select"
+            value={selectedPlaylist}
+            label="Select a playlist"
+            onChange={e => setSelectedPlaylist(e.target.value)}
+          >
+            <MenuItem value="">
+              <em>None</em>
+            </MenuItem>
+            {playlists.map(playlist => (
+              <MenuItem key={playlist.id} value={playlist.id}>
+                {playlist.name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </Box>
 
       <h3>Tracks</h3>
       <ul>
