@@ -7,6 +7,7 @@ import Select from '@mui/material/Select';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
 
 function SpotifyPlayer() {
   const [profile, setProfile] = useState(null);
@@ -117,40 +118,85 @@ function SpotifyPlayer() {
         </CardContent>
       </Card>
 
-      {selectedPlaylist && (
-        <Card sx={{ maxWidth: 600, width: '100%', boxShadow: 3, bgcolor: 'rgba(255,255,255,0.95)' }}>
-          <CardContent>
-            <Typography variant="h6" sx={{ mb: 2, color: '#43cea2', fontWeight: 600 }}>
-              Tracks
+{selectedPlaylist && (
+  <Card sx={{ maxWidth: 900, width: '100%', boxShadow: 4, bgcolor: 'rgba(255,255,255,0.97)', mt: 2 }}>
+    <CardContent>
+      <Typography variant="h5" sx={{ mb: 3, color: '#185a9d', fontWeight: 700 }}>
+        Playlist Tracks
+      </Typography>
+      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, justifyContent: 'center' }}>
+        {tracks.length === 0 && (
+          <Typography color="text.secondary">No tracks found.</Typography>
+        )}
+        {tracks.map(item => (
+          <Card
+            key={item.track.id}
+            sx={{
+              width: 260,
+              minHeight: 320,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              p: 2,
+              bgcolor: '#e3f2fd',
+              boxShadow: 3,
+              borderRadius: 3,
+              transition: 'transform 0.2s',
+              '&:hover': { transform: 'scale(1.04)' },
+            }}
+          >
+            {item.track.album?.images?.[0]?.url && (
+              <Box
+                component="img"
+                src={item.track.album.images[0].url}
+                alt={item.track.name}
+                sx={{
+                  width: 180,
+                  height: 180,
+                  borderRadius: 2,
+                  mb: 2,
+                  boxShadow: 2,
+                  objectFit: 'cover',
+                }}
+              />
+            )}
+            <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#185a9d', textAlign: 'center' }}>
+              {item.track.name}
             </Typography>
-            <Box component="ul" sx={{ pl: 2 }}>
-              {tracks.length === 0 && (
-                <Typography color="text.secondary">No tracks found.</Typography>
-              )}
-              {tracks.map(item => (
-                <li key={item.track.id} style={{ marginBottom: 8 }}>
-                  <Typography component="span" sx={{ fontWeight: 500 }}>
-                    {item.track.name}
-                  </Typography>
-                  {' – '}
-                  <Typography component="span" sx={{ color: '#185a9d' }}>
-                    {item.track.artists.map(a => a.name).join(', ')}
-                  </Typography>
-                  {' '}
-                  <a
-                    href={item.track.external_urls.spotify}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{ textDecoration: 'none', marginLeft: 8 }}
-                  >
-                    <span role="img" aria-label="play">▶️</span> Play
-                  </a>
-                </li>
-              ))}
-            </Box>
-          </CardContent>
-        </Card>
-      )}
+            <Typography variant="body2" sx={{ color: '#43cea2', mb: 1, textAlign: 'center' }}>
+              {item.track.artists.map(a => a.name).join(', ')}
+            </Typography>
+            <Button
+              variant="contained"
+              color="success"
+              size="small"
+              href={item.track.preview_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              sx={{ mt: 1, background: 'linear-gradient(90deg, #43cea2 0%, #185a9d 100%)' }}
+              disabled={!item.track.preview_url}
+              startIcon={<span role="img" aria-label="demo">🎧</span>}
+            >
+              {item.track.preview_url ? 'Show Demo' : 'No Demo'}
+            </Button>
+            <Button
+              variant="outlined"
+              color="primary"
+              size="small"
+              href={item.track.external_urls.spotify}
+              target="_blank"
+              rel="noopener noreferrer"
+              sx={{ mt: 1, ml: 0 }}
+              startIcon={<span role="img" aria-label="spotify">🟢</span>}
+            >
+              Open in Spotify
+            </Button>
+          </Card>
+        ))}
+      </Box>
+    </CardContent>
+  </Card>
+)}
     </Box>
   );
 }
