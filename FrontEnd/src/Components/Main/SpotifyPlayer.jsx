@@ -67,57 +67,89 @@ function SpotifyPlayer() {
         py: 6,
       }}
     >
-      <Card sx={{ maxWidth: 400, width: '100%', mb: 4, boxShadow: 6, bgcolor: 'rgba(255,255,255,0.95)' }}>
-        <CardContent>
-          <Typography variant="h3" align="center" sx={{ fontWeight: 700, color: '#185a9d', mb: 2 }}>
-            🎵 My Spotify
+{/* Profile Card */}
+    <Card
+      sx={{
+        maxWidth: 440,
+        width: '100%',
+        mb: 4,
+        boxShadow: 10,
+        bgcolor: 'rgba(255,255,255,0.7)',
+        backdropFilter: 'blur(8px)',
+        borderRadius: 5,
+        px: 2,
+      }}
+    >
+      <CardContent>
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 2 }}>
+          <span style={{ fontSize: 64, color: '#185a9d', marginBottom: 8 }}>🎵</span>
+          <Typography variant="h3" align="center" sx={{ fontWeight: 700, color: '#185a9d', mb: 1 }}>
+            My Spotify
           </Typography>
-          {profile && profile.display_name && profile.email ? (
-            <>
-              <Typography variant="h5" align="center" sx={{ color: '#43cea2', fontWeight: 600 }}>
-                {profile.display_name}
-              </Typography>
-              <Typography variant="body1" align="center" sx={{ mb: 2 }}>
-                Email: {profile.email}
-              </Typography>
-            </>
-          ) : (
-            <Typography align="center" color="text.secondary">
-              Loading profile...
+        </Box>
+        {profile && profile.display_name && profile.email ? (
+          <>
+            <Typography variant="h5" align="center" sx={{ color: '#43cea2', fontWeight: 600 }}>
+              {profile.display_name}
             </Typography>
-          )}
-        </CardContent>
-      </Card>
-
-      <Card sx={{ maxWidth: 400, width: '100%', mb: 4, boxShadow: 4, bgcolor: 'rgba(255,255,255,0.9)' }}>
-        <CardContent>
-          <Typography variant="h6" sx={{ mb: 2, color: '#185a9d', fontWeight: 600 }}>
-            Your Playlists
+            <Typography variant="body1" align="center" sx={{ mb: 2 }}>
+              Email: {profile.email}
+            </Typography>
+          </>
+        ) : (
+          <Typography align="center" color="text.secondary">
+            Loading profile...
           </Typography>
-          <Box sx={{ minWidth: 240 }}>
-            <FormControl fullWidth>
-              <InputLabel id="playlist-select-label">Select a playlist</InputLabel>
-              <Select
-                labelId="playlist-select-label"
-                id="playlist-select"
-                value={selectedPlaylist}
-                label="Select a playlist"
-                onChange={e => setSelectedPlaylist(e.target.value)}
-              >
-                <MenuItem value="">
-                  <em>None</em>
-                </MenuItem>
-                {playlists.map(playlist => (
-                  <MenuItem key={playlist.id} value={playlist.id}>
-                    {playlist.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Box>
-        </CardContent>
-      </Card>
+        )}
+      </CardContent>
+    </Card>
 
+      {/* Playlist Card */}
+    <Card
+      sx={{
+        maxWidth: 440,
+        width: '100%',
+        mb: 4,
+        boxShadow: 8,
+        bgcolor: 'rgba(255,255,255,0.8)',
+        borderRadius: 5,
+        px: 2,
+      }}
+    >
+      <CardContent>
+        <Typography variant="h6" sx={{ mb: 2, color: '#185a9d', fontWeight: 700 }}>
+          Your Playlists
+        </Typography>
+        <Box sx={{ minWidth: 240 }}>
+          <FormControl fullWidth>
+            <InputLabel id="playlist-select-label">Select a playlist</InputLabel>
+            <Select
+              labelId="playlist-select-label"
+              id="playlist-select"
+              value={selectedPlaylist}
+              label="Select a playlist"
+              onChange={e => setSelectedPlaylist(e.target.value)}
+              sx={{
+                bgcolor: '#f5fafd',
+                borderRadius: 2,
+                fontWeight: 600,
+              }}
+            >
+              <MenuItem value="">
+                <em>None</em>
+              </MenuItem>
+              {playlists.map(playlist => (
+                <MenuItem key={playlist.id} value={playlist.id}>
+                  {playlist.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
+      </CardContent>
+    </Card>
+
+    
 {selectedPlaylist && (
   <Card sx={{ maxWidth: 900, width: '100%', boxShadow: 4, bgcolor: 'rgba(255,255,255,0.97)', mt: 2 }}>
     <CardContent>
