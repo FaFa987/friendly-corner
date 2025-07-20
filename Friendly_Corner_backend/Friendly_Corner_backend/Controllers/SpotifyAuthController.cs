@@ -24,8 +24,8 @@ namespace Friendly_Corner_backend.Controllers
         public IActionResult Login()
         {
             var clientId = _config["Spotify:ClientId"];
-    var redirectUri = _config["Spotify:RedirectUri"];
-    var scope = "user-read-private user-read-email playlist-read-private playlist-read-collaborative";
+            var redirectUri = _config["Spotify:RedirectUri"];
+            var scope = "user-read-private user-read-email playlist-read-private playlist-read-collaborative";
 
     if (string.IsNullOrEmpty(clientId) || string.IsNullOrEmpty(redirectUri))
     {
@@ -38,37 +38,45 @@ namespace Friendly_Corner_backend.Controllers
 
         // Step 2: Spotify redirects here with code, exchange for token
         [HttpGet("callback")]
-        public async Task<IActionResult> Callback([FromQuery] string code)
-        {
-            var clientId = _config["Spotify:ClientId"];
-            var clientSecret = _config["Spotify:ClientSecret"];
-            var redirectUri = _config["Spotify:RedirectUri"];
+    public async Task<IActionResult> Callback([FromQuery] string code)
+    {
+      var clientId = _config["Spotify:ClientId"];
+      var clientSecret = _config["Spotify:ClientSecret"];
+      var redirectUri = _config["Spotify:RedirectUri"];
 
-            if (string.IsNullOrEmpty(code) || string.IsNullOrEmpty(redirectUri))
-            {
-                return BadRequest("Code or RedirectUri is missing.");
-            }
-            
-            var authHeader = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{clientId}:{clientSecret}"));
+    if (string.IsNullOrEmpty(code) || string.IsNullOrEmpty(redirectUri))
+    {
+        return BadRequest("Code or RedirectUri is missing.");
+    }
 
-            var request = new HttpRequestMessage(HttpMethod.Post, "https://accounts.spotify.com/api/token");
-            request.Headers.Authorization = new AuthenticationHeaderValue("Basic", authHeader);
-            request.Content = new FormUrlEncodedContent(new[]
-            {
-                new KeyValuePair<string, string>("grant_type", "authorization_code"),
-                new KeyValuePair<string, string>("code", code),
-                new KeyValuePair<string, string>("redirect_uri", redirectUri)
-            });
+      var authHeader = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{clientId}:{clientSecret}"));
 
-            var response = await _httpClient.SendAsync(request);
-            var content = await response.Content.ReadAsStringAsync();
+      var request = new HttpRequestMessage(HttpMethod.Post, "https://accounts.spotify.com/api/token");
+      request.Headers.Authorization = new AuthenticationHeaderValue("Basic", authHeader);
+      request.Content = new FormUrlEncodedContent(new[]
+      {
+        new KeyValuePair<string, string>("grant_type", "authorization_code"),
+        new KeyValuePair<string, string>("code", code),
+        new KeyValuePair<string, string>("redirect_uri", redirectUri)
+    });
 
-            if (!response.IsSuccessStatusCode)
-                return BadRequest(content);
+    var response = await _httpClient.SendAsync(request);
+    var content = await response.Content.ReadAsStringAsync();
 
-            // Return the token to the frontend
-            return Content(content, "application/json");
-        }
+    if (!response.IsSuccessStatusCode)
+        return BadRequest(content);
+
+    // Parse the access_token from the JSON response
+    var json = System.Text.Json.JsonDocument.Parse(content);
+    if (!json.RootElement.TryGetProperty("access_token", out var accessTokenElement))
+        return BadRequest("No access_token in response.");
+
+    var accessToken = accessTokenElement.GetString();
+
+    // Redirect to your frontend with the token as a query parameter
+    var frontendUrl = "http://localhost:5173/?token=" + Uri.EscapeDataString(accessToken);
+    return Redirect(frontendUrl);
+}
 
         // Step 3: Refresh access token using refresh token
 [HttpPost("refresh")]

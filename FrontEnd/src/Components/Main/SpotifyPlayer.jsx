@@ -17,30 +17,36 @@ function SpotifyPlayer() {
   const [spotifyToken, setSpotifyToken] = useState(localStorage.getItem('spotifyToken'));
 
   // --- 1. Check for token in URL and store it ---
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const token = params.get('token');
-    if (token) {
-      localStorage.setItem('spotifyToken', token);
-      setSpotifyToken(token);
-      window.history.replaceState({}, document.title, window.location.pathname);
-    }
-  }, []);
+useEffect(() => {
+  const params = new URLSearchParams(window.location.search);
+  const token = params.get('token');
+  if (token) {
+    localStorage.setItem('spotifyToken', token);
+    setSpotifyToken(token);
+    window.history.replaceState({}, document.title, window.location.pathname);
+    // Force reload to re-mount the component
+  }
+}, []);
 
-  // --- 2. Fetch user profile ---
-  useEffect(() => {
-    if (spotifyToken) {
-      fetch('https://api.spotify.com/v1/me', {
-        headers: {
-          'Authorization': `Bearer ${spotifyToken}`
+useEffect(() => {
+  if (spotifyToken) {
+    console.log('Using token:', spotifyToken);
+    fetch('https://api.spotify.com/v1/me', {
+      headers: {
+        'Authorization': `Bearer ${spotifyToken}`
+      }
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.error) {
+          alert('Spotify API error: ' + data.error.message);
         }
-      })
-        .then(res => res.json())
-        .then(data => setProfile(data));
-    } else {
-      setProfile(null);
-    }
-  }, [spotifyToken]);
+        setProfile(data);
+      });
+  } else {
+    setProfile(null);
+  }
+}, [spotifyToken]);
 
   // --- 3. Fetch user playlists ---
   useEffect(() => {
@@ -84,7 +90,7 @@ function SpotifyPlayer() {
 
   // --- 6. Login handler ---
   const handleLogin = () => {
-    window.location.href = 'http://127.0.0.1:5000/api/spotifyauth/login';
+    window.location.href = 'https://localhost:5000/api/spotifyauth/login';
   };
 
   return (
