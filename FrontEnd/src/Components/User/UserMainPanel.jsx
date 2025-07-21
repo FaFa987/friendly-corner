@@ -1,6 +1,8 @@
 import SlackFeed from '../Admin/Maintenance/Slackfeed';
 import MeetingRoomCalendar from './MeetingRoomCalendar';
+import SpotifyPlayer from '../Main/SpotifyPlayer';
 import './UserPage.css';
+
 function UserMainPanel({ selectedComponent }) {
     const renderComponent = () => {
         switch (selectedComponent) {
@@ -8,6 +10,8 @@ function UserMainPanel({ selectedComponent }) {
                 return <MeetingRoomCalendar />;
             case 'SlackFeed':
                 return <SlackFeed />;
+            case 'SpotifyPlayer':
+                return <SpotifyPlayer />;
             default:
                 return <SlackFeed />;
         }
